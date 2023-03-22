@@ -1,10 +1,16 @@
 const inquirer = require('inquirer');
 const roleData = require('../data/roles-data')
+const deptData = require('../data/departments-data');
 
 const viewAllRoles = (onComplete) => {
-    const roles = roleData.getRoles();
-    console.table(roles);
-    onComplete();
+    roleData.getRoles((error, roles) => {
+        if (error) {
+            console.log(error);
+        } else {
+            console.table(roles);
+        }
+        onComplete();
+    });
 }
 
 const addRolePrompt = (onComplete) => {
@@ -13,18 +19,48 @@ const addRolePrompt = (onComplete) => {
             {
                 type: 'input',
                 message: 'What is the role name?',
-                name: 'role',
-              },
-              {
+                name: 'title',
+            },
+            {
                 type: 'input',
-                message: 'What is not the role name?',
-                name: 'notrole',
-              },
+                message: 'What is the salary?', 
+                name: 'salary'
+            },
+            {
+                type: 'list',
+                message: 'What department does this role belong to?',
+                name: 'departmentId',
+                choices: function (answers) {
+                    //Not using promises since we aren't using promises anywhere else.
+                    const done = this.async();
+
+                    deptData.getDepartments((error, departments) => {
+                        if (error) { 
+                            console.log(error);
+                            done(error);
+                        } else {
+                            const choices = departments.map((department) => {
+                                return {
+                                    name: department.name,
+                                    value: department.id,
+                                    short: department.name
+                                };
+                            });
+                            done(null, choices);
+                        }
+                    });   
+                }
+            }
         ])
         .then((answers) => {
-            roleData.addRole(answers.role);
-            console.log(answers);
-            onComplete();
+            roleData.addRole(answers, (error, result) => {
+                if (error) {
+                    console.log(error);
+                } else {
+                    console.log(result);
+                }
+                onComplete();
+            });
         })
 }
 

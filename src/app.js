@@ -2,9 +2,10 @@ const inquirer = require('inquirer');
 const deptPromts = require('./ui/departments');
 const empPromts = require('./ui/employee');
 const rolePromts = require('./ui/roles');
-
+const connection = require('./mysql/connection')
+//start app function
 const home = () => {
-
+    //prompts initial action
     inquirer
         .prompt([
             {
@@ -17,9 +18,12 @@ const home = () => {
                     'add a department',
                     'add a role',
                     'add an employee',
-                    'update an employee role']
+                    'update an employee role',
+                    'exit'
+                ]
             }
         ])
+        // displays info or prompts secondary action
         .then(
             (answers) => {
                 console.log(answers);
@@ -35,12 +39,15 @@ const home = () => {
                     empPromts.viewAllEmployees(home);
                 } else if (answers.menuChoice === 'add an employee') {
                     empPromts.addEmployeePromt(home);
+                } else if (answers.menuChoice === 'update an employee role') {
+                    empPromts.updateEmployeePromt(home);
+                } else if (answers.menuChoice === 'exit') {
+                    connection.closeConnection();
                 }
             } 
         )
         .catch((err)=> {console.log(`error: ${err}`)})
 }
-//viewAllRoles & viewsAllEmployees dont worry about names showing up just foreign key id's
-// just copy this exact formula
 
+//run start function
 home();

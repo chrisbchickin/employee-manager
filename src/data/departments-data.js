@@ -1,19 +1,25 @@
-const fs = require('fs');
+const connection = require('../mysql/connection')
 
-const getDepartments = () => {
-    const departmentsJson = fs.readFileSync('departments.json')
-    return JSON.parse(departmentsJson);
+const getDepartments = (onComplete) => {
+    const sql = `SELECT id, name FROM department`
+    connection.getConnection().query(
+        sql, (error, result) => {
+            onComplete(error, result);
+        } 
+    )
 }
 
-const addDepartment = (departmant) => {
-    const departmants = getDepartments();
-    const newId = departmants.reduce((max, value) => {return Math.max(max, value.id)},0) + 1;
-    console.log(newId);
-    departmants.push({
-        id: newId,
-        name: departmant
-    })
-
-    fs.writeFileSync('departments.json', JSON.stringify(departmants));
+const addDepartment = (name, onComplete) => {
+    const sql = `INSERT INTO department (name)
+    VALUES (?)`;
+    const params = [name];
+    connection.getConnection().query(
+        sql, params, (error, result) => {
+            onComplete(error, result);
+        }
+    )
 }
+
+
+
 module.exports = { getDepartments, addDepartment }

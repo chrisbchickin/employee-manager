@@ -1,19 +1,37 @@
-const fs = require('fs');
+const connection = require('../mysql/connection')
 
-const getEmployee = () => {
-    const employeeJson = fs.readFileSync('employee.json')
-    return JSON.parse(employeeJson);
+const getEmployees = (onComplete) => {
+    const sql = `SELECT employee.id, employee.first_name as firstName, 
+                        employee.last_name as lastName, role.title as roleTitle,
+                        manager.first_name as managerName 
+                 FROM employee
+                 INNER JOIN role ON employee.role_id=role.id
+                 LEFT JOIN employee manager ON employee.manager_id=manager.id`
+    connection.getConnection().query(
+        sql, onComplete
+    )
 }
 
-const addEmployee = (employee) => {
-    const employees = getEmployee();
-    const newId = employees.reduce((max, value) => {return Math.max(max, value.id)},0) + 1;
-    console.log(newId);
-    employees.push({
-        id: newId,
-        name: employee
-    })
-
-    fs.writeFileSync('employee.json', JSON.stringify(employees));
+const addEmployee = (employee, onComplete) => {
+    const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+    VALUES (?, ?, ?, ?)`;
+    const params = [employee.firstName, employee.lastName, employee.roleId, employee.managerId];
+    connection.getConnection().execute(
+        sql, params, (error, result) => {
+            onComplete(error, result);
+        }
+    )
 }
-module.exports = { getEmployee, addEmployee }
+
+const updateEmployee = (employee, onComplete) => {
+    const sql = `UPDATE employee 
+                 SET role_id = ?
+                 WHERE id = ?`;
+    const params = [employee.roleId, employee.id];
+    connection.getConnection().execute(
+        sql, params, (error, result) => {
+            onComplete(error, result);
+        }
+    )
+}
+module.exports = { getEmployees, addEmployee, updateEmployee }
