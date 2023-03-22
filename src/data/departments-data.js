@@ -1,5 +1,5 @@
 const connection = require('../mysql/connection')
-
+// retreives departments through sequel
 const getDepartments = (onComplete) => {
     const sql = `SELECT id, name FROM department`
     connection.getConnection().query(
@@ -8,7 +8,7 @@ const getDepartments = (onComplete) => {
         } 
     )
 }
-
+//adds department through sequel
 const addDepartment = (name, onComplete) => {
     const sql = `INSERT INTO department (name)
     VALUES (?)`;

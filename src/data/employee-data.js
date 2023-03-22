@@ -1,5 +1,5 @@
 const connection = require('../mysql/connection')
-
+// retreives employees through sequel
 const getEmployees = (onComplete) => {
     const sql = `SELECT employee.id, employee.first_name as firstName, 
                         employee.last_name as lastName, role.title as roleTitle,
@@ -11,7 +11,7 @@ const getEmployees = (onComplete) => {
         sql, onComplete
     )
 }
-
+//adds employee through sequel
 const addEmployee = (employee, onComplete) => {
     const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
     VALUES (?, ?, ?, ?)`;

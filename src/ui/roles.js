@@ -1,7 +1,7 @@
 const inquirer = require('inquirer');
 const roleData = require('../data/roles-data')
 const deptData = require('../data/departments-data');
-
+// retrieves roles through sql
 const viewAllRoles = (onComplete) => {
     roleData.getRoles((error, roles) => {
         if (error) {
@@ -12,7 +12,7 @@ const viewAllRoles = (onComplete) => {
         onComplete();
     });
 }
-
+// adds role
 const addRolePrompt = (onComplete) => {
     inquirer
         .prompt([
