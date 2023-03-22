@@ -57,7 +57,7 @@ const addRolePrompt = (onComplete) => {
                 if (error) {
                     console.log(error);
                 } else {
-                    console.log(result);
+                    console.table(result);
                 }
                 onComplete();
             });
